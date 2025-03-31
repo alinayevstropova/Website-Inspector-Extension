@@ -1,0 +1,53 @@
+#website-checker-popup {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  z-index: 999999;
+  width: 100%;
+  max-width: 400px; 
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+  max-height: 90%;
+    overflow-y: scroll;
+}
+
+#website-checker-popup ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+}
+
+#website-checker-popup li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+#website-checker-popup li .material-icons {
+  margin-right: 8px;
+}
+
+#website-checker-popup .close-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: #777;
+  font-size: 20px;
+}
+
+#website-checker-popup .close-button:hover {
+  color: #333;
+}
+
+#website-checker-popup p {
+  margin-top: 10px;
+}
