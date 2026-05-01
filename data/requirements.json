@@ -1,219 +1,52 @@
 {
   "mustHave": [
     {
-      "element": "<meta charset=\"utf-8\">",
-      "message": "Добавить meta charset=\"UTF-8\""
+      "element": "<meta charset=\"utf-8\"",
+      "message": "Add a UTF-8 charset meta tag."
     },
     {
-      "element": "jquery",
-      "message": "Добавить jquery"
-    },
-    {
-      "element": "favicon",
-      "message": "Добавить favicon"
-    },
-    {
-      "element": "function pastDate(number = 0)",
-      "message": "Добавить функцию pastDate(number = 0)"
-    },
-    
-    {
-      "element": "scrollTop: $(\"#myForm\").offset()",
-      "message": "Добавить скролл к форме."
-    },
-    {
-      "element": "id='myForm'",
-      "message": "Добавить формy c айди 'myForm'"
-    },
-    {
-      "element": "<input type=\"hidden\" name=\"country\"",
-      "message": "Добавить скрытый input 'country'."
+      "element": "name=\"viewport\"",
+      "message": "Add a responsive viewport meta tag."
     }
   ],
-  
   "mustNotHave": [
     {
       "element": "<iframe",
-      "message": "Удалить все iframe."
-    },
-    {
-      "element": "<noscript",
-      "message": "Удалить все noscript."
-    },
-    {
-      "element": "target=\"_blank\"",
-      "message": "Удалить атрибут target='_blank'."
-    },
-    {
-      "element": "pointer-events: none",
-      "message": "Удалить стиль pointer-events: none."
-    },
-    {
-      "element": "loading=\"lazy\"",
-      "message": "Удалить атрибут loading=\"lazy\"."
+      "message": "Review iframe usage and remove it if it is not required."
     },
     {
       "element": "eval\\(",
-      "message": "Удалить eval()"
+      "message": "Avoid eval() because it is unsafe and difficult to maintain."
     },
     {
-      "element": "atob\\(",
-      "message": "Удалить atob()"
-    }
-  ],
-  "warnings": [
-    {
-      "selector": "video",
-      "attribute": "controlsList",
-      "value": "nodownload",
-      "message": "Добавить controlsList=\"nodownload\" к видео"
-    },
-    {
-      "selector": "video",
-      "attribute": "poster",
-      "value": "*",
-      "message": "Добавить poster к видео"
+      "element": "target=\"_blank\"",
+      "message": "Links opening in a new tab should include rel=\"noopener noreferrer\"."
     }
   ],
   "custom": [
     {
-      "element": "onclick",
-      "message": "Удалить атрибуты onclick;",
-      "selector": "a"
+      "selector": "img:not([alt])",
+      "message": "Images should include alt text."
     },
     {
-      "element": "onload",
-      "message": "Удалить атрибуты onload;",
-      "selector": "*"
+      "selector": "button:empty",
+      "message": "Buttons should have visible text or an accessible label."
     },
     {
-      "element": "data-",
-      "message": "Удалить атрибуты data, если они содержат ссылки или скрипты;",
-      "selector": "*"
-    },
-    {
-      "element": "base64",
-      "message": "Удалить Base64, если это не критичные изображения",
-      "selector": "*"
-    },
-      
-      {
-        "element": "ondblclick",
-        "message": "Удалить атрибут ondblclick;",
-        "selector": "*"
-      },
-      {
-        "element": "onmousedown",
-        "message": "Удалить атрибут onmousedown;",
-        "selector": "*"
-      },
-      {
-        "element": "onmouseup",
-        "message": "Удалить атрибут onmouseup;",
-        "selector": "*"
-      },
-      {
-        "element": "onmousemove",
-        "message": "Удалить атрибут onmousemove;",
-        "selector": "*"
-      },
-      {
-        "element": "onmouseover",
-        "message": "Удалить атрибут onmouseover;",
-        "selector": "*"
-      },
-      {
-        "element": "onmouseout",
-        "message": "Удалить атрибут onmouseout;",
-        "selector": "*"
-      },
-      {
-        "element": "onkeydown",
-        "message": "Удалить атрибут onkeydown;",
-        "selector": "*"
-      },
-      {
-        "element": "onkeyup",
-        "message": "Удалить атрибут onkeyup;",
-        "selector": "*"
-      },
-      {
-        "element": "onkeypress",
-        "message": "Удалить атрибут onkeypress;",
-        "selector": "*"
-      },
-      {
-        "element": "onfocus",
-        "message": "Удалить атрибут onfocus;",
-        "selector": "*"
-      },
-      {
-        "element": "onblur",
-        "message": "Удалить атрибут onblur;",
-        "selector": "*"
-      },
-      {
-        "element": "onchange",
-        "message": "Удалить атрибут onchange;",
-        "selector": "*"
-      },
-      {
-        "element": "oninput",
-        "message": "Удалить атрибут oninput;",
-        "selector": "*"
-      },
-      {
-        "element": "onsubmit",
-        "message": "Удалить атрибут onsubmit;",
-        "selector": "*"
-      },
-      {
-        "element": "onreset",
-        "message": "Удалить атрибут onreset;",
-        "selector": "*"
-      },
-      {
-        "element": "onload",
-        "message": "Удалить атрибут onload;",
-        "selector": "*"
-      },
-      {
-        "element": "onunload",
-        "message": "Удалить атрибут onunload;",
-        "selector": "*"
-      },
-      {
-        "element": "onbeforeunload",
-        "message": "Удалить атрибут onbeforeunload;",
-        "selector": "*"
-      },
-      {
-        "element": "onerror",
-        "message": "Удалить атрибут onerror;",
-        "selector": "*"
-      },
-      {
-        "element": "ontouchstart",
-        "message": "Удалить атрибут ontouchstart;",
-        "selector": "*"
-      },
-      {
-        "element": "ontouchmove",
-        "message": "Удалить атрибут ontouchmove;",
-        "selector": "*"
-      },
-      {
-        "element": "ontouchend",
-        "message": "Удалить атрибут ontouchend;",
-        "selector": "*"
-      },
-      {
-        "element": "ontouchcancel",
-        "message": "Удалить атрибут ontouchcancel;",
-        "selector": "*"
-      }
+      "selector": "input:not([type=\"hidden\"]):not([aria-label])",
+      "message": "Inputs should have a label or aria-label."
+    }
   ],
-  "clarityTags": {
-    "myTag": "jgfjgfjyftftgf"
-  }
+  "warnings": [
+    {
+      "selector": "h1",
+      "minCount": 1,
+      "message": "Add one clear H1 heading."
+    },
+    {
+      "selector": "meta[name=\"description\"]",
+      "minCount": 1,
+      "message": "Add a meta description."
+    }
+  ]
 }

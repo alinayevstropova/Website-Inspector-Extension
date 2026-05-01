@@ -1,239 +1,167 @@
-chrome.storage.local.get(["enabled", "requirements"], (items) => {
-  if (items.enabled && items.requirements) {
-    const requirements = items.requirements;
-
-    // Остальной код остается внутри самовызывающейся функции
-    (function () {
-      // Проверяем, выполняется ли скрипт в главном окне
-      if (window.top === window.self) {
-        const { errors, warnings } = performChecks(requirements);
-        displayPopup(errors, warnings, requirements);
-      }
-
-      function performChecks(requirements) {
-        const errors = [];
-        const warnings = [];
-        const pageContent = document.documentElement.innerHTML.toLowerCase();
-        const geolangInput = document.querySelector('input[name="language"]');
-        const geolangValue = geolangInput ? geolangInput.value.toUpperCase() : null;
-        const countryInput = document.querySelector('input[name="country"]');
-        const countryValue = countryInput ? countryInput.value.toUpperCase() : null;
-        // --- MUST HAVE checks ---
-        requirements.mustHave.forEach((req) => {
-          if (!pageContent.includes(req.element.toLowerCase())) {
-            errors.push({ message: req.message, type: "missing" });
-          }
-        });
-
-        // --- MUST NOT HAVE checks ---
-        requirements.mustNotHave.forEach((req) => {
-          const regex = new RegExp(req.element, "i");
-          if (regex.test(pageContent)) {
-            errors.push({ message: req.message, type: "forbidden" });
-          }
-        });
-
-        // --- CUSTOM checks ---
-        requirements.custom.forEach((req) => {
-          
-          const elements = document.querySelectorAll(req.selector);
-          elements.forEach((element) => {
-            if (
-              req.element === "onclick" &&
-              element.hasAttribute(req.element)
-            ) {
-              // Ignore specific onclick value
-              if (
-                element.getAttribute("onclick").replace(/\s/g, "") ===
-                "document.location.hash='';returnfalse;"
-              ) {
-                return;
-              }
-              errors.push({ message: req.message, type: "invalid" });
-            } else if (req.element === "data-") {
-              // Check data attributes for specific content
-              const dataAttributes = element.attributes;
-              for (let i = 0; i < dataAttributes.length; i++) {
-                if (
-                  dataAttributes[i].name.startsWith("data-") &&
-                  (dataAttributes[i].value.includes("http") ||
-                    dataAttributes[i].value.includes(".js"))
-                ) {
-                  errors.push({ message: req.message, type: "invalid" });
-                  break;
-                }
-              }
-            } else if (req.element === "base64") {
-              // Check for base64 in attributes (excluding data:image)
-              const attributes = element.attributes;
-              for (let i = 0; i < attributes.length; i++) {
-                if (
-                  attributes[i].value.includes("base64") &&
-                  !attributes[i].value.includes("data:image")
-                ) {
-                  errors.push({ message: req.message, type: "invalid" });
-                  break;
-                }
-              }
-            } else if (element.hasAttribute(req.element)) {
-              // Check for other event attributes
-              errors.push({ message: req.message, type: "invalid" });
-            }
-          });
-        });
-        function checkFormAction() {
-          const form = document.querySelector('#myForm');
-          if (!form) {
-              errors.push({
-                  message: "Форма с id='myForm' не найдена на странице.",
-                  type: "missing"
-              });
-              return;
-          }
-      
-          const action = form.getAttribute('action');
-          if (action !== "thankyou.html") {
-              errors.push({
-                  message: `Форма должна иметь action="thankyou.html", но найдено action="${action}"`,
-                  type: "invalid"
-              });
-          }
-      }
-      
-      // Запускаем проверку
-      checkFormAction();
-        
-
-        if (
-          !window.jQuery &&
-          !document.querySelector("script[src*='jquery']")
-        ) {
-          errors.push({ message: "Добавить jQuery", type: "missing" });
-        }
-
-        if (
-          !document.querySelector("link[rel='icon'], link[rel='shortcut icon']")
-        ) {
-          errors.push({ message: "Добавить favicon", type: "missing" });
-        }
-        const forms = document.querySelectorAll("form");
-        if (forms.length > 2) {
-          errors.push({
-            message: `Удалить лишние формы: ${forms.length - 2}`,
-            type: "invalid",
-          });
-        }
-        const linksWithTargetBlank =
-          document.querySelectorAll('[target="_blank"]');
-        if (linksWithTargetBlank.length > 0) {
-          errors.push({
-            message: `Ссылки с target="_blank": ${linksWithTargetBlank.length}`,
-            type: "warning", // или "invalid", в зависимости от ваших требований
-          });
-        }
-
-        
-        const emptyInitializationPattern =
-          /^(firstName|lastName|email|phone|submit|additionalFirst|additionalSecond|additionalThird):\s*'',$/m;
-
-        if (emptyInitializationPattern.test(pageContent)) {
-          errors.push({
-            message: "Удали пустую инициализацию инпута,",
-            type: "invalid",
-          });
-        }
-
-        const styleRegex =
-          /<style>[\s\S]*form:not\(\[id\]\):not\(\[class\]\)[\s\S]*display:\s*none;[\s\S]*\.stretched-link[\s\S]*display:\s*none\s*!important;[\s\S]*<\/style>/i;
-
-        if (!styleRegex.test(document.documentElement.innerHTML)) {
-          errors.push({
-            message:
-              "Добавить style с form:not([id]):not([class]) и .stretched-link",
-            type: "missing",
-          });
-        }
-        return { errors, warnings };
-      }
-
-      function displayPopup(errors, warnings, requirements) {
-        let popup = document.getElementById("website-checker-popup"); // Получаем существующий popup
-
-        if (!popup) {
-          // Если popup не существует, создаем его
-          popup = document.createElement("div");
-          popup.id = "website-checker-popup";
-
-          const closeButton = document.createElement("span");
-          closeButton.innerHTML = "&times;";
-          closeButton.classList.add("close-button");
-          closeButton.onclick = () => popup.remove();
-          popup.appendChild(closeButton);
-
-          document.body.appendChild(popup);
-        }
-
-        // Очищаем содержимое popup перед обновлением
-        popup.innerHTML = "";
-        const closeButton = document.createElement("span");
-        closeButton.innerHTML = "&times;";
-        closeButton.classList.add("close-button");
-        closeButton.onclick = () => popup.remove();
-        popup.appendChild(closeButton);
-
-        const message = document.createElement("div");
-
-        // Группировка ошибок
-        const groupedErrors = {};
-        errors.forEach((error) => {
-          const errorMessage = error.message;
-          groupedErrors[errorMessage] = (groupedErrors[errorMessage] || 0) + 1;
-        });
-
-        if (Object.keys(groupedErrors).length > 0) {
-          message.innerHTML = "<b>Ошибки:</b><ul>";
-          for (const [errorMessage, count] of Object.entries(groupedErrors)) {
-            message.innerHTML += `<li><span class="material-icons" style="color: #d93025; font-size: 18px; vertical-align: middle;">error</span> ${count} x ${errorMessage}</li>`;
-          }
-          message.innerHTML += "</ul>";
-        } else if (warnings.length > 0) {
-          message.innerHTML = "<b>Предупреждения:</b><ul>";
-          warnings.forEach((warning) => {
-            message.innerHTML += `<li><span class="material-icons" style="color: #f0ad4e; font-size: 18px; vertical-align: middle;">warning</span> ${warning.message}</li>`;
-          });
-          message.innerHTML += "</ul>";
-        } else {
-          message.textContent = "Ошибки не обнаружены.";
-        }
-
-        // Добавляем информацию о Clarity Tag
-        let clarityTag = null;
-        let clarityTagOwner = null;
-        const clarityTagScript = document.querySelector(
-          'script[src*="clarity.ms/tag/"]'
-        );
-        if (clarityTagScript) {
-          clarityTag = clarityTagScript.src.split("/").pop();
-          clarityTagOwner = Object.keys(requirements.clarityTags).find(
-            (key) => requirements.clarityTags[key] === clarityTag
-          );
-        }
-        message.innerHTML += `<p>Clarity Tag: ${clarityTag || "Не найден"} (${
-          clarityTagOwner || "Неизвестно"
-        })</p>`;
-
-        popup.appendChild(message);
-      }
-
-      const slink = document.createElement("link");
-      slink.rel = "stylesheet";
-      slink.href = chrome.runtime.getURL("scripts/styles.css");
-      document.head.appendChild(slink);
-
-      const glink = document.createElement("link");
-      glink.rel = "stylesheet";
-      glink.href = "https://fonts.googleapis.com/icon?family=Material+Icons";
-      document.head.appendChild(glink);
-    })();
+chrome.storage.local.get(["enabled", "requirements"], ({ enabled, requirements }) => {
+  if (!enabled || !requirements || window.top !== window.self) {
+    return;
   }
+
+  const result = auditPage(requirements);
+  renderAuditPanel(result);
 });
+
+function auditPage(requirements) {
+  const html = document.documentElement.innerHTML.toLowerCase();
+  const issues = [];
+  const warnings = [];
+
+  for (const rule of requirements.mustHave || []) {
+    if (!html.includes(rule.element.toLowerCase())) {
+      issues.push({ type: "Missing", message: rule.message });
+    }
+  }
+
+  for (const rule of requirements.mustNotHave || []) {
+    const pattern = new RegExp(rule.element, "i");
+    if (pattern.test(html)) {
+      issues.push({ type: "Review", message: rule.message });
+    }
+  }
+
+  for (const rule of requirements.custom || []) {
+    const matches = document.querySelectorAll(rule.selector);
+    if (matches.length > 0) {
+      issues.push({
+        type: "Element",
+        message: `${rule.message} Found ${matches.length}.`,
+      });
+    }
+  }
+
+  for (const rule of requirements.warnings || []) {
+    const matches = document.querySelectorAll(rule.selector);
+    if (Number.isInteger(rule.minCount) && matches.length < rule.minCount) {
+      warnings.push({ type: "Warning", message: rule.message });
+    }
+  }
+
+  runBuiltInChecks(issues, warnings);
+
+  return { issues, warnings };
+}
+
+function runBuiltInChecks(issues, warnings) {
+  const title = document.querySelector("title")?.textContent?.trim();
+  if (!title) {
+    issues.push({ type: "SEO", message: "Add a page title." });
+  }
+
+  const h1Count = document.querySelectorAll("h1").length;
+  if (h1Count === 0) {
+    warnings.push({ type: "Content", message: "Add one clear H1 heading." });
+  }
+  if (h1Count > 1) {
+    warnings.push({ type: "Content", message: `Review H1 structure. Found ${h1Count}.` });
+  }
+
+  const imagesWithoutAlt = document.querySelectorAll("img:not([alt])").length;
+  if (imagesWithoutAlt > 0) {
+    issues.push({
+      type: "Accessibility",
+      message: `Add alt text to ${imagesWithoutAlt} image(s).`,
+    });
+  }
+
+  const unsafeNewTabLinks = document.querySelectorAll(
+    'a[target="_blank"]:not([rel*="noopener"])'
+  ).length;
+
+  if (unsafeNewTabLinks > 0) {
+    issues.push({
+      type: "Security",
+      message: `Add rel="noopener noreferrer" to ${unsafeNewTabLinks} external link(s).`,
+    });
+  }
+
+  const forms = document.querySelectorAll("form");
+  forms.forEach((form, index) => {
+    const unlabeledInputs = form.querySelectorAll(
+      'input:not([type="hidden"]):not([aria-label])'
+    );
+    if (unlabeledInputs.length > 0) {
+      warnings.push({
+        type: "Forms",
+        message: `Form ${index + 1} has ${unlabeledInputs.length} input(s) that may need labels.`,
+      });
+    }
+  });
+}
+
+function renderAuditPanel({ issues, warnings }) {
+  const existingPanel = document.getElementById("website-inspector-panel");
+  if (existingPanel) {
+    existingPanel.remove();
+  }
+
+  const panel = document.createElement("aside");
+  panel.id = "website-inspector-panel";
+  panel.setAttribute("role", "dialog");
+  panel.setAttribute("aria-label", "Website audit results");
+
+  const header = document.createElement("div");
+  header.className = "wi-header";
+
+  const title = document.createElement("strong");
+  title.textContent = "Website Inspector";
+
+  const closeButton = document.createElement("button");
+  closeButton.type = "button";
+  closeButton.className = "wi-close";
+  closeButton.textContent = "x";
+  closeButton.setAttribute("aria-label", "Close audit panel");
+  closeButton.addEventListener("click", () => panel.remove());
+
+  header.append(title, closeButton);
+  panel.appendChild(header);
+
+  const summary = document.createElement("p");
+  summary.className = "wi-summary";
+  summary.textContent =
+    issues.length === 0 && warnings.length === 0
+      ? "No issues found."
+      : `${issues.length} issue(s), ${warnings.length} warning(s)`;
+  panel.appendChild(summary);
+
+  if (issues.length > 0) {
+    panel.appendChild(createSection("Issues", issues));
+  }
+
+  if (warnings.length > 0) {
+    panel.appendChild(createSection("Warnings", warnings));
+  }
+
+  document.body.appendChild(panel);
+}
+
+function createSection(title, items) {
+  const section = document.createElement("section");
+  const heading = document.createElement("h2");
+  const list = document.createElement("ul");
+
+  heading.textContent = title;
+
+  for (const item of items) {
+    const listItem = document.createElement("li");
+    listItem.innerHTML = `<span>${escapeHtml(item.type)}</span>${escapeHtml(item.message)}`;
+    list.appendChild(listItem);
+  }
+
+  section.append(heading, list);
+  return section;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
