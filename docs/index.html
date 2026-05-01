@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Demo page for a Chrome Website Inspector extension that checks SEO, accessibility, and markup quality signals."
+    />
+    <title>Website Inspector Extension Demo</title>
+    <style>
+      :root {
+        --ink: #181b1f;
+        --muted: #606974;
+        --line: #d8dee6;
+        --page: #f7f8fa;
+        --panel: #ffffff;
+        --blue: #235fbe;
+        --green: #16715b;
+        --red: #b34848;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: var(--page);
+        line-height: 1.55;
+      }
+
+      main {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 48px 0;
+      }
+
+      a {
+        color: var(--blue);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(320px, 0.95fr);
+        gap: 32px;
+        align-items: center;
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--green);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.1rem, 6vw, 4.6rem);
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        max-width: 720px;
+        margin: 20px 0 0;
+        color: var(--muted);
+        font-size: 1.08rem;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .button {
+        display: inline-flex;
+        min-height: 44px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0 16px;
+        background: var(--panel);
+        color: var(--ink);
+      }
+
+      .button.primary {
+        border-color: var(--blue);
+        background: var(--blue);
+        color: #fff;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 18px 48px rgba(24, 27, 31, 0.1);
+      }
+
+      .panel header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--line);
+        padding: 16px;
+      }
+
+      .badge {
+        border-radius: 999px;
+        padding: 4px 10px;
+        color: #fff;
+        background: var(--green);
+        font-size: 0.78rem;
+        font-weight: 800;
+      }
+
+      .audit-list {
+        display: grid;
+        gap: 10px;
+        padding: 16px;
+      }
+
+      .audit-row {
+        display: grid;
+        grid-template-columns: 96px 1fr;
+        gap: 12px;
+        align-items: start;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+      }
+
+      .severity {
+        color: var(--red);
+        font-size: 0.85rem;
+        font-weight: 800;
+      }
+
+      .audit-row p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 44px;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 18px;
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        font-size: 1.05rem;
+      }
+
+      .card p,
+      .card ol {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .card ol {
+        padding-left: 20px;
+      }
+
+      @media (max-width: 860px) {
+        .hero,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .audit-row {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Chrome extension / QA tooling</p>
+          <h1>Page-quality audit panel for frontend and QA checks.</h1>
+          <p class="lead">
+            Website Inspector runs configurable DOM checks and surfaces issues such as missing SEO metadata,
+            accessibility gaps, unsafe links, and markup patterns that deserve review.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://github.com/alinayevstropova/Website-Inspector-Extension">View code</a>
+            <a class="button" href="./audit-target.html">Open audit target</a>
+          </div>
+        </div>
+
+        <aside class="panel" aria-label="Audit panel preview">
+          <header>
+            <strong>Website Inspector</strong>
+            <span class="badge">Enabled</span>
+          </header>
+          <div class="audit-list">
+            <div class="audit-row">
+              <span class="severity">SEO</span>
+              <p>Add a useful meta description to improve search and sharing previews.</p>
+            </div>
+            <div class="audit-row">
+              <span class="severity">A11y</span>
+              <p>Add alt text to image content that communicates information.</p>
+            </div>
+            <div class="audit-row">
+              <span class="severity">Security</span>
+              <p>External links that open in a new tab should use rel attributes.</p>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="grid" aria-label="Project highlights">
+        <article class="card">
+          <h2>How to demo</h2>
+          <ol>
+            <li>Load the extension from the repository.</li>
+            <li>Open the audit target page.</li>
+            <li>Review the in-page audit panel.</li>
+          </ol>
+        </article>
+        <article class="card">
+          <h2>Rules</h2>
+          <p>Checks are configurable through a JSON rules file, so new technical requirements can be added quickly.</p>
+        </article>
+        <article class="card">
+          <h2>Portfolio value</h2>
+          <p>Shows frontend debugging, QA thinking, DOM APIs, browser extension structure, and accessibility awareness.</p>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

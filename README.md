@@ -2,6 +2,12 @@
 
 Chrome extension that audits a page for common technical, SEO, accessibility, and markup-quality issues.
 
+## Demo
+
+[Open project demo page](https://alinayevstropova.github.io/Website-Inspector-Extension/)
+
+[Open audit target page](https://alinayevstropova.github.io/Website-Inspector-Extension/audit-target.html)
+
 ## Why this project matters
 
 This project is a bridge between frontend development and QA thinking. It shows how browser tooling can surface practical page-quality checks directly inside a website, which is useful for handoff, support, and pre-release review.
